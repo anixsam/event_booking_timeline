@@ -1,6 +1,6 @@
 name: event_booking_timeline
 description: "To display the events booked in a specific time of the day. The events which are booked or reserved are displayed in forms of colors. Callbacks are provided to get the selected event."
-version: 0.0.4
+version: 0.0.5
 homepage: "https://github.com/anixsam/event_booking_timeline.git"
 
 license: MIT
