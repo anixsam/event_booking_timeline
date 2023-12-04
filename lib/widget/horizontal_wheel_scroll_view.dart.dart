@@ -61,7 +61,7 @@ class HorizontalListWheelScrollView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _childDelegate = children != null
+    final customChildDelegate = children != null
         ? ListWheelChildListDelegate(
             children: children!.map((child) {
             return RotatedBox(
@@ -94,7 +94,7 @@ class HorizontalListWheelScrollView extends StatelessWidget {
         onSelectedItemChanged: onSelectedItemChanged,
         renderChildrenOutsideViewport: renderChildrenOutsideViewport,
         clipBehavior: clipBehavior,
-        childDelegate: _childDelegate,
+        childDelegate: customChildDelegate,
       ),
     );
   }
