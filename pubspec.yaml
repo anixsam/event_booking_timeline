@@ -1,7 +1,7 @@
 name: event_booking_timeline
 description: "A new Flutter package project."
 version: 0.0.1
-homepage: "https://example.com"
+homepage: "https://github.com/anixsam/event_booking_timeline.git"
 
 environment:
   sdk: '>=3.2.2 <4.0.0'
