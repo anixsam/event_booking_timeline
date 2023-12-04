@@ -17,7 +17,7 @@ Event booking timeline is a widget used to display the events booked in a specif
 ### Install
 
     dependencies:
-        wheel_chooser: ^0.0.1
+        wheel_chooser: ^0.0.3
 
 ## Usage
 
@@ -47,4 +47,4 @@ Event booking timeline is a widget used to display the events booked in a specif
 
 ### Demo
 
-![image](https://github.com/anixsam/event_booking_timeline/blob/941c4949685ac65f5564bc99a861aa4dee50fa9e/example/sample.gif)
+<img src="https://github.com/anixsam/event_booking_timeline/blob/9128064df2d225d04f4980ca983535e12fa4cbb5/example/sample.gif" alt="Demo">
