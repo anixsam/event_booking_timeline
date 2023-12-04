@@ -1,5 +1,7 @@
 # Event Booking Timeline
 
+[![pub package](https://img.shields.io/pub/v/event_booking_timeline)](https://pub.dev/packages/event_booking_timeline)
+
 Event booking timeline is a widget used to display the events booked in a specific time of the day.
 
 ## Features
@@ -45,4 +47,4 @@ Event booking timeline is a widget used to display the events booked in a specif
 
 ### Demo
 
-<img src="https://github.com/anixsam/event_booking_timeline/blob/3ec4d8b2ac10f876b955ee044b595ad160b07ead/example/sample.gif" >
+![image](https://github.com/anixsam/event_booking_timeline/blob/941c4949685ac65f5564bc99a861aa4dee50fa9e/example/sample.gif)
