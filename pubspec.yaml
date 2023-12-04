@@ -1,5 +1,5 @@
 name: event_booking_timeline
-description: "A new Flutter package project."
+description: "To display the events booked in a specific time of the day."
 version: 0.0.1
 homepage: "https://github.com/anixsam/event_booking_timeline.git"
 
