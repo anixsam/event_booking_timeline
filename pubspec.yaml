@@ -1,7 +1,9 @@
 name: event_booking_timeline
 description: "To display the events booked in a specific time of the day."
-version: 0.0.1
+version: 0.0.2
 homepage: "https://github.com/anixsam/event_booking_timeline.git"
+
+license: MIT
 
 environment:
   sdk: '>=3.2.2 <4.0.0'
