@@ -45,4 +45,4 @@ Event booking timeline is a widget used to display the events booked in a specif
 
 ### Demo
 
-<img src="./samples/sample.gif" >
+<img src="https://github.com/anixsam/event_booking_timeline/blob/3ec4d8b2ac10f876b955ee044b595ad160b07ead/example/sample.gif" >

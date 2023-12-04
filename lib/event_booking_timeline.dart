@@ -11,8 +11,8 @@ class Booking {
   Booking({required this.startTime, required this.endTime});
 }
 
-class CustomTimeLine extends StatefulWidget {
-  const CustomTimeLine({
+class EventBookingTimeline extends StatefulWidget {
+  const EventBookingTimeline({
     super.key,
     required this.onTimeSelected,
     required this.startTime,
@@ -42,10 +42,10 @@ class CustomTimeLine extends StatefulWidget {
   final Color bookedColor;
 
   @override
-  State<CustomTimeLine> createState() => _CustomTimeLineState();
+  State<EventBookingTimeline> createState() => _EventBookingTimelineState();
 }
 
-class _CustomTimeLineState extends State<CustomTimeLine> {
+class _EventBookingTimelineState extends State<EventBookingTimeline> {
   late FixedExtentScrollController scrollController =
       FixedExtentScrollController(
     initialItem: 0,
