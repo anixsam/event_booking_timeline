@@ -14,3 +14,7 @@
 
 * SDK Version downgraded
 * Some readme changes.
+
+## [0.0.8]
+
+* Added New Feature Supporting, skipping through the booked/reserved slots

@@ -64,6 +64,7 @@ class _HomePageState extends State<HomePage> {
                   widthOfTimeDivisionBar: 3,
                   availableColor: Colors.green,
                   bookedColor: Colors.red,
+                  moveToNextPrevSlot: true,
                   onTimeSelected: (String time) {
                     setState(
                       () {

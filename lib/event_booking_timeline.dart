@@ -25,6 +25,7 @@ class EventBookingTimeline extends StatefulWidget {
     required this.is12HourFormat,
     required this.availableColor,
     required this.bookedColor,
+    required this.moveToNextPrevSlot,
   });
 
   final Function(String time) onTimeSelected;
@@ -37,6 +38,7 @@ class EventBookingTimeline extends StatefulWidget {
   final List<Booking> booked;
   final bool moveToFirstAvailableTime;
   final bool is12HourFormat;
+  final bool moveToNextPrevSlot;
 
   final Color availableColor;
   final Color bookedColor;
@@ -61,6 +63,8 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
   List<String> timeSegments = [];
 
   int currentIndex = 0;
+  int prevIndex = 0;
+
   late int numberOfSubdivision;
 
   late double totalWidth;
@@ -90,6 +94,10 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     int firstAvailableSlot = widget.moveToFirstAvailableTime
         ? getNextAvailableTime(0, timeSegments.length)
         : 0;
+
+    setState(() {
+      currentIndex = firstAvailableSlot;
+    });
 
     scrollController =
         FixedExtentScrollController(initialItem: firstAvailableSlot);
@@ -177,11 +185,55 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
 
     int firstAvailableSlot = timeSegments.indexOf(availableTimeSegments.first);
 
-    setState(() {
-      currentIndex = firstAvailableSlot;
-    });
-
     return firstAvailableSlot;
+  }
+
+  void jumpToNextPrevSlot() {
+    // finding first available slot
+    int firstAvailableSlot =
+        getNextAvailableTime(currentIndex, timeSegments.length);
+    int prevAvailableSlot = getPrevAvailableTime(0, currentIndex);
+
+    // Checking scroll direction
+    if (currentIndex > prevIndex) {
+      if (currentIndex == firstAvailableSlot) {
+        // scrollController.jumpToItem(currentIndex);
+      } else {
+        scrollController.jumpToItem(firstAvailableSlot);
+      }
+    } else {
+      if (currentIndex == prevAvailableSlot) {
+        // scrollController.jumpToItem(currentIndex);
+      } else {
+        scrollController.jumpToItem(prevAvailableSlot);
+      }
+    }
+  }
+
+  int getPrevAvailableTime(int start, int end) {
+    List<String> availableTimeSegments = [];
+
+    for (int i = start; i <= end; i++) {
+      availableTimeSegments.add(timeSegments[i]);
+    }
+
+    for (int i = start; i < end; i++) {
+      List<Booking> bookedTimes = booked;
+      if (bookedTimes.isNotEmpty) {
+        for (var element in bookedTimes) {
+          // getting range of time between start and end time
+          int startIndex = timeSegments.indexOf(element.startTime);
+          int endIndex = timeSegments.indexOf(element.endTime);
+
+          for (int i = startIndex + 1; i <= endIndex; i++) {
+            availableTimeSegments.remove(timeSegments[i]);
+          }
+        }
+      }
+    }
+    int lastAvailableSlot = timeSegments.indexOf(availableTimeSegments.last);
+
+    return lastAvailableSlot;
   }
 
   int getBarHeight(int i) {
@@ -399,12 +451,14 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
           perspective: 0.01,
           onSelectedItemChanged: (index) {
             setState(() {
-              currentIndex = index;
-              widget.onTimeSelected(
-                is12HourFormat
-                    ? getTimeText(timeSegments[index])
-                    : timeSegments[index],
-              );
+              if (prevIndex != currentIndex) {
+                prevIndex = currentIndex;
+                currentIndex = index;
+              }
+              if (widget.moveToNextPrevSlot) {
+                jumpToNextPrevSlot();
+              }
+              widget.onTimeSelected(getTimeText(timeSegments[index]));
             });
           },
           children: timeList,
