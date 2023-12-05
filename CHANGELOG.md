@@ -10,6 +10,7 @@
 
 * No changes, some metadata changes.
 
-## [0.0.6]
+## [0.0.4] - [0.0.7]
 
-* SDK Version changed
+* SDK Version downgraded
+* Some readme changes.
