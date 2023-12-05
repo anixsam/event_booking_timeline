@@ -10,6 +10,6 @@
 
 * No changes, some metadata changes.
 
-## [0.0.5]
+## [0.0.6]
 
 * SDK Version changed
