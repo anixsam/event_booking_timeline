@@ -1,3 +1,4 @@
+// Exception for event and duration
 class EventException implements Exception {
   final String message;
   EventException(this.message);

@@ -30,7 +30,7 @@ Note : The arrow can be added on top-center of the timeline, for better user-exp
 ### Install
 
     dependencies:
-        event_booking_timeline: ^0.0.9
+        event_booking_timeline: ^0.1.0
 
 ## Usage
 
@@ -74,8 +74,37 @@ Note : The arrow can be added on top-center of the timeline, for better user-exp
         bookedColor: Colors.red,
         moveToNextPrevSlot: true,
         durationToBlock: 1,
-        currentBlockedColor: Colors.blue,
+        onError: (error) {
+            log("Error: $error");
+        },
+        onTimeSelected: (String time) {
+            setState(
+                () {
+                    text = time;
+                },
+            );
+        },
+    );
+
+    EventBookingTimeline.withCurrentBookingSlot(
+        booked: [
+            Booking(startTime: "00:00", endTime: "01:00"),
+            Booking(startTime: "01:00", endTime: "02:00"),
+            Booking(startTime: "08:00", endTime: "09:00"),
+        ],
+        startTime: "00:00",
+        endTime: "24:00",
+        is12HourFormat: true,
+        moveToFirstAvailableTime: false,
+        numberOfSubdivision: 5,
+        widthOfSegment: 100,
+        widthOfTimeDivisionBar: 3,
+        availableColor: Colors.green,
+        bookedColor: Colors.red,
+        moveToNextPrevSlot: true,
+        durationToBlock: 1,
         showCurrentBlockedSlot: true,
+        currentBlockedColor: Colors.blue,
         onError: (error) {
             log("Error: $error");
         },

@@ -52,25 +52,52 @@ class EventBookingTimeline extends StatefulWidget {
     required this.currentBlockedColor,
   });
 
+  // Callback function to get the selected time
   final Function(String time) onTimeSelected;
+
+  // Callback function to get the error - like if the next x hours are not available, etc
   final Function(dynamic error) onError;
 
+  // Starting time of the timeline (24 Hour Format)
   final String startTime;
+
+  // Ending time of the timeline
   final String endTime;
 
+  // The number of subdivisions between the main divisions
   final int numberOfSubdivision;
+
+  // The width of each time segments
   final double widthOfSegment;
+
+  // The thickness of each division
   final double widthOfTimeDivisionBar;
+
+  // List of booked slots
   final List<Booking> booked;
+
+  // To move the timeline to the next available slot
   final bool moveToFirstAvailableTime;
+
+  // The time to be displayed on the timeline
   final bool is12HourFormat;
+
+  // Should the timeline skip the blocked slots
   final bool moveToNextPrevSlot;
+
+  // Whether the current blocked state should be shown or not.
   late bool showCurrentBlockedSlot;
 
+  //  Color to indicate available slot
   final Color availableColor;
+
+  // Color to indicate booked slot
   final Color bookedColor;
+
+  // Color to indicate current blocked slot
   late Color currentBlockedColor;
 
+  // Duration to block
   final double durationToBlock;
 
   @override
@@ -78,6 +105,7 @@ class EventBookingTimeline extends StatefulWidget {
 }
 
 class _EventBookingTimelineState extends State<EventBookingTimeline> {
+  // Scrollcontroller for the timeline to scroll programmatically.
   late FixedExtentScrollController scrollController =
       FixedExtentScrollController(
     initialItem: 0,
@@ -109,6 +137,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
   void initState() {
     super.initState();
 
+    // Initializing the timeline
     width = widget.widthOfSegment;
     numberOfSubdivision = widget.numberOfSubdivision;
     totalWidth = (numberOfSubdivision + 1) * width;
@@ -135,6 +164,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
         FixedExtentScrollController(initialItem: firstAvailableSlot);
   }
 
+  // Getting the list of time segments.
   List<String> getTimes() {
     List<String> timeStrings = [];
 
@@ -171,6 +201,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     return timeStrings;
   }
 
+  // Generating the text time according to the format.
   String getTimeText(String time) {
     int hour = int.parse(time.split(":")[0]);
     int minute = int.parse(time.split(":")[1]);
@@ -192,6 +223,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     return "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')} $ampm";
   }
 
+  // Getting the next available slot
   int getNextAvailableTime(int start, int end) {
     List<String> availableTimeSegments = [];
 
@@ -220,6 +252,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     return firstAvailableSlot;
   }
 
+  // Moving to the next/previous available slot according to scroll direction
   void jumpToNextPrevSlot() {
     // finding first available slot
     int firstAvailableSlot =
@@ -246,6 +279,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     }
   }
 
+  // Getting the previous available slot
   int getPrevAvailableTime(int start, int end) {
     List<String> availableTimeSegments = [];
 
@@ -272,6 +306,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     return lastAvailableSlot;
   }
 
+  // Getting the height of the bar - Timeline bars.
   int getBarHeight(int i) {
     // Checking if the time is the correctBar
     String time = timeSegments[i];
@@ -287,6 +322,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     }
   }
 
+  // Checking if the time is the alternate bar
   bool isAlternateBars(int i) {
     // Checking if the time is the correctBar
     String time = timeSegments[i];
@@ -313,6 +349,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     }
   }
 
+  // Getting the timeline bar - Widget
   Widget getTimeline(Color firstColor, Color secondColor, int i) {
     Widget timelineContainer;
     if (i == 0) {
@@ -403,6 +440,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     return widget;
   }
 
+  // Checking if the next x hours are booked or not
   bool checkIfNextXDurationBooked() {
     int startIndex = currentIndex;
 
@@ -442,6 +480,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     return false;
   }
 
+  // Calculating the end time with the duration
   String calculateEndTimeWithDuration() {
     int startIndex = currentIndex;
 
@@ -477,6 +516,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     return endTime;
   }
 
+  // Error callback to the parent widget.
   void errorCallback() {
     widget.onError(
       DurationException(
