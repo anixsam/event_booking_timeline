@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class HorizontalListWheelScrollView extends StatelessWidget {
+  /// All the properties are same as [ListWheelScrollView] except [scrollDirection] and [children].
   final Axis scrollDirection;
   final List<Widget>? children;
   final ScrollController? controller;
@@ -19,6 +20,7 @@ class HorizontalListWheelScrollView extends StatelessWidget {
   final ListWheelChildDelegate? childDelegate;
   final Clip clipBehavior;
 
+  /// Creates a [ListWheelScrollView] that scrolls items horizontally.
   const HorizontalListWheelScrollView({
     Key? key,
     this.scrollDirection = Axis.vertical,
@@ -39,6 +41,7 @@ class HorizontalListWheelScrollView extends StatelessWidget {
   })  : childDelegate = null,
         super(key: key);
 
+  /// Creates a [ListWheelScrollView] that scrolls items horizontally.
   const HorizontalListWheelScrollView.useDelegate({
     Key? key,
     this.scrollDirection = Axis.vertical,
@@ -78,6 +81,7 @@ class HorizontalListWheelScrollView extends StatelessWidget {
             },
           );
 
+    /// RotatedBox is used to rotate the child by 90 degrees.
     return RotatedBox(
       quarterTurns: scrollDirection == Axis.horizontal ? 3 : 0,
       child: ListWheelScrollView.useDelegate(
