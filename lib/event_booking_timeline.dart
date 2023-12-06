@@ -1,6 +1,7 @@
 library event_booking_timeline;
 
 // import 'dart:math';
+import 'package:event_booking_timeline/exceptions/exception.dart';
 import 'package:event_booking_timeline/widget/horizontal_wheel_scroll_view.dart.dart';
 import 'package:flutter/material.dart';
 
@@ -11,8 +12,9 @@ class Booking {
   Booking({required this.startTime, required this.endTime});
 }
 
+// ignore: must_be_immutable
 class EventBookingTimeline extends StatefulWidget {
-  const EventBookingTimeline({
+  EventBookingTimeline({
     super.key,
     required this.onTimeSelected,
     required this.startTime,
@@ -26,9 +28,33 @@ class EventBookingTimeline extends StatefulWidget {
     required this.availableColor,
     required this.bookedColor,
     required this.moveToNextPrevSlot,
+    required this.onError,
+    required this.durationToBlock,
+  });
+
+  EventBookingTimeline.withCurrentBookingSlot({
+    super.key,
+    required this.onTimeSelected,
+    required this.startTime,
+    required this.endTime,
+    required this.numberOfSubdivision,
+    required this.widthOfSegment,
+    required this.widthOfTimeDivisionBar,
+    required this.booked,
+    required this.moveToFirstAvailableTime,
+    required this.is12HourFormat,
+    required this.availableColor,
+    required this.bookedColor,
+    required this.moveToNextPrevSlot,
+    required this.onError,
+    required this.durationToBlock,
+    required this.showCurrentBlockedSlot,
+    required this.currentBlockedColor,
   });
 
   final Function(String time) onTimeSelected;
+  final Function(dynamic error) onError;
+
   final String startTime;
   final String endTime;
 
@@ -39,9 +65,13 @@ class EventBookingTimeline extends StatefulWidget {
   final bool moveToFirstAvailableTime;
   final bool is12HourFormat;
   final bool moveToNextPrevSlot;
+  late bool showCurrentBlockedSlot;
 
   final Color availableColor;
   final Color bookedColor;
+  late Color currentBlockedColor;
+
+  final double durationToBlock;
 
   @override
   State<EventBookingTimeline> createState() => _EventBookingTimelineState();
@@ -55,6 +85,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
 
   Color bookedColor = Colors.red;
   Color availableColor = Colors.green;
+  Color currentBlockedColor = Colors.yellow;
 
   // int currentScale = 1;
 
@@ -87,6 +118,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
 
     bookedColor = widget.bookedColor;
     availableColor = widget.availableColor;
+    currentBlockedColor = widget.currentBlockedColor;
 
     booked = widget.booked;
 
@@ -196,16 +228,20 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
 
     // Checking scroll direction
     if (currentIndex > prevIndex) {
-      if (currentIndex == firstAvailableSlot) {
-        // scrollController.jumpToItem(currentIndex);
-      } else {
+      if (currentIndex != firstAvailableSlot) {
+        widget.onTimeSelected(getTimeText(timeSegments[firstAvailableSlot]));
         scrollController.jumpToItem(firstAvailableSlot);
+        setState(() {
+          currentIndex = firstAvailableSlot;
+        });
       }
     } else {
-      if (currentIndex == prevAvailableSlot) {
-        // scrollController.jumpToItem(currentIndex);
-      } else {
+      if (currentIndex != prevAvailableSlot) {
+        widget.onTimeSelected(getTimeText(timeSegments[prevAvailableSlot]));
         scrollController.jumpToItem(prevAvailableSlot);
+        setState(() {
+          currentIndex = prevAvailableSlot;
+        });
       }
     }
   }
@@ -367,11 +403,97 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     return widget;
   }
 
+  bool checkIfNextXDurationBooked() {
+    int startIndex = currentIndex;
+
+    String endTime = calculateEndTimeWithDuration();
+
+    int endIndex = timeSegments.indexOf(endTime);
+
+    List<String> availableTimeSegments = [];
+
+    for (int i = startIndex; i <= endIndex; i++) {
+      availableTimeSegments.add(timeSegments[i]);
+    }
+
+    int numberOfSlots = availableTimeSegments.length;
+
+    for (int i = startIndex; i < endIndex; i++) {
+      List<Booking> _booked = booked;
+
+      if (_booked.isNotEmpty) {
+        _booked.forEach((element) {
+          // getting range of time between start and end time
+          int startIndex = timeSegments.indexOf(element.startTime);
+          int endIndex = timeSegments.indexOf(element.endTime);
+
+          for (int i = startIndex + 1; i < endIndex; i++) {
+            availableTimeSegments.remove(timeSegments[i]);
+          }
+        });
+      }
+    }
+
+    if (availableTimeSegments.length < numberOfSlots ||
+        availableTimeSegments.isEmpty) {
+      return true;
+    }
+
+    return false;
+  }
+
+  String calculateEndTimeWithDuration() {
+    int startIndex = currentIndex;
+
+    String startTime = timeSegments[startIndex];
+
+    String endTime = "";
+
+    if (int.parse(widget.durationToBlock.toString().split(".")[1]) == 0) {
+      int hour =
+          int.parse(startTime.split(":")[0]) + widget.durationToBlock.toInt();
+      int minute = int.parse(startTime.split(":")[1]);
+
+      endTime =
+          "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}";
+    } else {
+      int hour =
+          int.parse(startTime.split(":")[0]) + widget.durationToBlock.toInt();
+      int minute = int.parse(startTime.split(":")[1]);
+
+      int newMinute = minute + 60 ~/ (numberOfSubdivision + 1);
+
+      if (newMinute >= 60) {
+        hour += 1;
+        minute = newMinute - 60;
+      } else {
+        minute = newMinute;
+      }
+
+      endTime =
+          "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}";
+    }
+
+    return endTime;
+  }
+
+  void errorCallback() {
+    widget.onError(
+      DurationException(
+        "Next ${widget.durationToBlock} hours are not available",
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List<Widget> timeList = [];
 
     Map<String, Widget> timeListMap = {};
+
+    if (widget.booked != booked) {
+      booked = widget.booked;
+    }
 
     for (var element in booked) {
       String startTime = element.startTime;
@@ -405,6 +527,46 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
       } else {
         timeListMap[endTime] =
             getTimeline(bookedColor, availableColor, endIndex);
+      }
+    }
+
+    if (widget.showCurrentBlockedSlot) {
+      if (!checkIfNextXDurationBooked()) {
+        String startTime = timeSegments[currentIndex];
+        String endTime = calculateEndTimeWithDuration();
+
+        int startIndex = timeSegments.indexOf(startTime);
+        int endIndex = timeSegments.indexOf(endTime);
+
+        for (int i = startIndex + 1; i < endIndex; i++) {
+          timeListMap[timeSegments[i]] =
+              getTimeline(currentBlockedColor, currentBlockedColor, i);
+        }
+
+        // Checking if start time is already end time of some other booking
+        List<Booking> bookedTimes =
+            booked.where((element) => element.endTime == startTime).toList();
+
+        if (bookedTimes.isNotEmpty) {
+          timeListMap[startTime] =
+              getTimeline(bookedColor, currentBlockedColor, startIndex);
+        } else {
+          timeListMap[startTime] =
+              getTimeline(availableColor, currentBlockedColor, startIndex);
+        }
+
+        // Checking if end time is already start time of some other booking
+
+        bookedTimes =
+            booked.where((element) => element.startTime == endTime).toList();
+
+        if (bookedTimes.isNotEmpty) {
+          timeListMap[endTime] =
+              getTimeline(currentBlockedColor, bookedColor, endIndex);
+        } else {
+          timeListMap[endTime] =
+              getTimeline(currentBlockedColor, availableColor, endIndex);
+        }
       }
     }
 
@@ -458,7 +620,11 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
               if (widget.moveToNextPrevSlot) {
                 jumpToNextPrevSlot();
               }
-              widget.onTimeSelected(getTimeText(timeSegments[index]));
+              widget.onTimeSelected(getTimeText(timeSegments[currentIndex]));
+              final bool isBooked = checkIfNextXDurationBooked();
+              if (isBooked) {
+                errorCallback();
+              }
             });
           },
           children: timeList,

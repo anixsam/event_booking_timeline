@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:event_booking_timeline/event_booking_timeline.dart';
 
@@ -48,6 +50,40 @@ class _HomePageState extends State<HomePage> {
                 Icons.arrow_drop_down,
                 size: 30,
               ),
+              // Timeline with current booking slot
+              Expanded(
+                child: EventBookingTimeline.withCurrentBookingSlot(
+                  booked: [
+                    Booking(startTime: "00:00", endTime: "01:00"),
+                    Booking(startTime: "01:00", endTime: "02:00"),
+                    Booking(startTime: "08:00", endTime: "09:00"),
+                  ],
+                  startTime: "00:00",
+                  endTime: "24:00",
+                  is12HourFormat: true,
+                  moveToFirstAvailableTime: false,
+                  numberOfSubdivision: 5,
+                  widthOfSegment: 100,
+                  widthOfTimeDivisionBar: 3,
+                  availableColor: Colors.green,
+                  bookedColor: Colors.red,
+                  moveToNextPrevSlot: true,
+                  durationToBlock: 1,
+                  showCurrentBlockedSlot: true,
+                  currentBlockedColor: Colors.blue,
+                  onError: (error) {
+                    log("Error: $error");
+                  },
+                  onTimeSelected: (String time) {
+                    setState(
+                      () {
+                        text = time;
+                      },
+                    );
+                  },
+                ),
+              ),
+              // Normal Timeline with no current booking slot
               Expanded(
                 child: EventBookingTimeline(
                   booked: [
@@ -65,6 +101,10 @@ class _HomePageState extends State<HomePage> {
                   availableColor: Colors.green,
                   bookedColor: Colors.red,
                   moveToNextPrevSlot: true,
+                  durationToBlock: 1,
+                  onError: (error) {
+                    log("Error: $error");
+                  },
                   onTimeSelected: (String time) {
                     setState(
                       () {

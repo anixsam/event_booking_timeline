@@ -18,3 +18,10 @@
 ## [0.0.8]
 
 * Added New Feature Supporting, skipping through the booked/reserved slots
+
+## [0.0.9]
+
+* Added new Feature - Highlighting current blocked slot.
+* Added new API - EventBookingTimeline.withCurrentBookingSlot()
+* Added new Exceptions - DurationException, EventException
+* Bug fixes for existing features.
