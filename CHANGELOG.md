@@ -26,6 +26,6 @@
 * Added new Exceptions - DurationException, EventException
 * Bug fixes for existing features.
 
-## [0.1.0]
+## [0.1.0] - [0.1.1]
 
 * Documentation updates
