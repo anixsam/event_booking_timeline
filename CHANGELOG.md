@@ -25,3 +25,7 @@
 * Added new API - EventBookingTimeline.withCurrentBookingSlot()
 * Added new Exceptions - DurationException, EventException
 * Bug fixes for existing features.
+
+## [0.1.0]
+
+* Documentation updates
