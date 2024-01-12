@@ -26,6 +26,12 @@
 * Added new Exceptions - DurationException, EventException
 * Bug fixes for existing features.
 
-## [0.1.0] - [0.1.1]
+## [0.1.0] - [0.1.2]
 
 * Documentation updates
+* SDK downgrade
+
+## [0.1.3]
+
+* Added new feature - Added a flag to block the timeline until the time on device
+* Added new feature - Callback added to detect the end of timeline - when user scrolls to end callback will be triggered.

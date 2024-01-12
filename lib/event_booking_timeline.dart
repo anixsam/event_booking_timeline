@@ -37,6 +37,8 @@ class EventBookingTimeline extends StatefulWidget {
     required this.bookedColor,
     required this.moveToNextPrevSlot,
     required this.onError,
+    required this.onTimeLineEnd,
+    required this.blockUntilCurrentTime,
     required this.durationToBlock,
   });
 
@@ -56,6 +58,8 @@ class EventBookingTimeline extends StatefulWidget {
     required this.bookedColor,
     required this.moveToNextPrevSlot,
     required this.onError,
+    required this.onTimeLineEnd,
+    required this.blockUntilCurrentTime,
     required this.durationToBlock,
     required this.showCurrentBlockedSlot,
     required this.currentBlockedColor,
@@ -66,6 +70,9 @@ class EventBookingTimeline extends StatefulWidget {
 
   /// Callback function to get the error - like if the next x hours are not available, etc
   final Function(dynamic error) onError;
+
+  /// Callback function to get the end of the timeline - like if the timeline reaches the end of the day, etc
+  final Function() onTimeLineEnd;
 
   /// Starting time of the timeline (24 Hour Format)
   final String startTime;
@@ -108,6 +115,9 @@ class EventBookingTimeline extends StatefulWidget {
 
   /// Duration to block
   final double durationToBlock;
+
+  /// State to block the timeline until the current time
+  final bool blockUntilCurrentTime;
 
   @override
   State<EventBookingTimeline> createState() => _EventBookingTimelineState();
@@ -161,6 +171,10 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
 
     booked = widget.booked;
 
+    if (widget.blockUntilCurrentTime) {
+      blockUntilCurrentTime();
+    }
+
     // finding first available slot
     int firstAvailableSlot = widget.moveToFirstAvailableTime
         ? getNextAvailableTime(0, timeSegments.length)
@@ -172,6 +186,57 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
 
     scrollController =
         FixedExtentScrollController(initialItem: firstAvailableSlot);
+  }
+
+  /// Blocking the timeline until the current time
+  void blockUntilCurrentTime() {
+    DateTime now = DateTime.now();
+    // Round off to nearest hour according to the numberOfSubdivision
+    int hour = now.hour;
+
+    int minute = now.minute;
+
+    int maxMinutes = 60;
+
+    if ((minute).toInt() > (maxMinutes ~/ (numberOfSubdivision + 1))) {
+      minute = 0;
+      if (hour == 23) {
+        hour = 0;
+      } else {
+        hour += 1;
+      }
+    } else {
+      minute = 30;
+    }
+
+    String time =
+        "${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}";
+
+    // Checking if booking containes the time in between the start and current time
+
+    List<Booking> bookingList = booked;
+
+    if (bookingList.isNotEmpty) {
+      bookingList = bookingList.map((e) {
+        String startTime = e.startTime;
+
+        String endTime = e.endTime;
+
+        if (timeSegments.indexOf(startTime) < timeSegments.indexOf(time)) {
+          startTime = time;
+        }
+
+        if (timeSegments.indexOf(endTime) > timeSegments.indexOf(time)) {
+          endTime = time;
+        }
+
+        return Booking(startTime: startTime, endTime: e.endTime);
+      }).toList();
+
+      booked = bookingList;
+    }
+    // Adding to booking
+    booked.add(Booking(startTime: timeSegments.first, endTime: time));
   }
 
   /// Getting the list of time segments.
@@ -467,10 +532,10 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     int numberOfSlots = availableTimeSegments.length;
 
     for (int i = startIndex; i < endIndex; i++) {
-      List<Booking> _booked = booked;
+      List<Booking> bookingList = booked;
 
-      if (_booked.isNotEmpty) {
-        _booked.forEach((element) {
+      if (bookingList.isNotEmpty) {
+        for (var element in bookingList) {
           // getting range of time between start and end time
           int startIndex = timeSegments.indexOf(element.startTime);
           int endIndex = timeSegments.indexOf(element.endTime);
@@ -478,7 +543,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
           for (int i = startIndex + 1; i < endIndex; i++) {
             availableTimeSegments.remove(timeSegments[i]);
           }
-        });
+        }
       }
     }
 
@@ -533,6 +598,11 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
         "Next ${widget.durationToBlock} hours are not available",
       ),
     );
+  }
+
+  /// Callback to detect the end of timeLine and user can either reset the timeline or show the error.
+  void timeLineEndCallback() {
+    widget.onTimeLineEnd();
   }
 
   @override
@@ -666,6 +736,10 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
               if (prevIndex != currentIndex) {
                 prevIndex = currentIndex;
                 currentIndex = index;
+              }
+              if (currentIndex == timeSegments.length - 1) {
+                timeLineEndCallback();
+                return;
               }
               if (widget.moveToNextPrevSlot) {
                 jumpToNextPrevSlot();

@@ -71,6 +71,7 @@ class _HomePageState extends State<HomePage> {
                   durationToBlock: 1,
                   showCurrentBlockedSlot: true,
                   currentBlockedColor: Colors.blue,
+                  blockUntilCurrentTime: true,
                   onError: (error) {
                     log("Error: $error");
                   },
@@ -80,6 +81,9 @@ class _HomePageState extends State<HomePage> {
                         text = time;
                       },
                     );
+                  },
+                  onTimeLineEnd: () {
+                    log("TimeLine Ended");
                   },
                 ),
               ),
@@ -102,6 +106,7 @@ class _HomePageState extends State<HomePage> {
                   bookedColor: Colors.red,
                   moveToNextPrevSlot: true,
                   durationToBlock: 1,
+                  blockUntilCurrentTime: true,
                   onError: (error) {
                     log("Error: $error");
                   },
@@ -111,6 +116,9 @@ class _HomePageState extends State<HomePage> {
                         text = time;
                       },
                     );
+                  },
+                  onTimeLineEnd: () {
+                    log("TimeLine Ended");
                   },
                 ),
               ),
