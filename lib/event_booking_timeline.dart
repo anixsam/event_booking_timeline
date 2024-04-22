@@ -40,6 +40,10 @@ class EventBookingTimeline extends StatefulWidget {
     required this.onTimeLineEnd,
     required this.blockUntilCurrentTime,
     required this.durationToBlock,
+    required this.selectedBarColor,
+    required this.selectedTextColor,
+    required this.textColor,
+    required this.barColor,
   });
 
   /// Constructor with current booking slot highlight feature
@@ -63,6 +67,10 @@ class EventBookingTimeline extends StatefulWidget {
     required this.durationToBlock,
     required this.showCurrentBlockedSlot,
     required this.currentBlockedColor,
+    required this.selectedBarColor,
+    required this.selectedTextColor,
+    required this.textColor,
+    required this.barColor,
   });
 
   /// Callback function to get the selected time
@@ -119,6 +127,18 @@ class EventBookingTimeline extends StatefulWidget {
   /// State to block the timeline until the current time
   final bool blockUntilCurrentTime;
 
+  /// Color of the current selected bar
+  final Color selectedBarColor;
+
+  /// Color of the current selected text
+  final Color selectedTextColor;
+
+  /// Color of the text
+  final Color textColor;
+
+  /// Color of the bar
+  final Color barColor;
+
   @override
   State<EventBookingTimeline> createState() => _EventBookingTimelineState();
 }
@@ -135,6 +155,12 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
   Color availableColor = Colors.green;
   Color currentBlockedColor = Colors.yellow;
 
+  // Colors of text and bar
+  late Color selectedBarColor = Colors.black;
+  late Color selectedTextColor = Colors.black;
+  late Color textColor = Colors.grey;
+  late Color barColor = Colors.grey;
+
   // int currentScale = 1;
 
   late List<Booking> booked;
@@ -142,7 +168,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
   List<String> timeSegments = [];
 
   int currentIndex = 0;
-  int prevIndex = 0;
+  int prevIndex = -1;
 
   late int numberOfSubdivision;
 
@@ -158,27 +184,36 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     super.initState();
 
     // Initializing the timeline
-    width = widget.widthOfSegment;
-    numberOfSubdivision = widget.numberOfSubdivision;
-    totalWidth = (numberOfSubdivision + 1) * width;
-    timeDivisionBarHeight = widget.widthOfTimeDivisionBar;
-    timeSegments = getTimes();
-    is12HourFormat = widget.is12HourFormat;
+    setState(() {
+      width = widget.widthOfSegment;
+      numberOfSubdivision = widget.numberOfSubdivision;
+      totalWidth = (numberOfSubdivision + 1) * width;
+      timeDivisionBarHeight = widget.widthOfTimeDivisionBar;
+      timeSegments = getTimes();
+      is12HourFormat = widget.is12HourFormat;
 
-    bookedColor = widget.bookedColor;
-    availableColor = widget.availableColor;
-    currentBlockedColor = widget.currentBlockedColor;
+      bookedColor = widget.bookedColor;
+      availableColor = widget.availableColor;
+      currentBlockedColor = widget.currentBlockedColor;
 
-    booked = widget.booked;
+      selectedBarColor = widget.selectedBarColor;
+      selectedTextColor = widget.selectedTextColor;
+      textColor = widget.textColor;
+      barColor = widget.barColor;
+
+      booked = widget.booked;
+    });
 
     if (widget.blockUntilCurrentTime) {
       blockUntilCurrentTime();
     }
 
     // finding first available slot
-    int firstAvailableSlot = widget.moveToFirstAvailableTime
-        ? getNextAvailableTime(0, timeSegments.length)
-        : 0;
+    int firstAvailableSlot = widget.booked.isEmpty
+        ? 0
+        : widget.moveToFirstAvailableTime
+            ? getNextAvailableTime(0, timeSegments.length)
+            : 0;
 
     setState(() {
       currentIndex = firstAvailableSlot;
@@ -489,7 +524,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
             width: timeDivisionBarHeight,
             height: getBarHeight(i).toDouble(),
             decoration: BoxDecoration(
-              color: i == currentIndex ? Colors.black : Colors.grey,
+              color: i == currentIndex ? selectedBarColor : barColor,
               borderRadius: BorderRadius.circular(5),
             ),
           ),
@@ -500,7 +535,9 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
                   i == currentIndex ? FontWeight.bold : FontWeight.normal,
               color:
                   (timeSegments[i].split(":")[1] == "00") || isAlternateBars(i)
-                      ? Colors.black
+                      ? i == currentIndex
+                          ? selectedTextColor
+                          : textColor
                       : Colors.transparent,
               fontSize: (timeSegments[i].split(":")[1] == "00") ||
                       (isAlternateBars(i))
@@ -611,6 +648,22 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
 
     Map<String, Widget> timeListMap = {};
 
+    timeSegments = getTimes();
+
+    timeList = timeSegments.map(
+      (e) {
+        if (timeListMap.containsKey(e)) {
+          return timeListMap[e]!;
+        } else {
+          return getTimeline(
+            availableColor,
+            availableColor,
+            timeSegments.indexOf(e),
+          );
+        }
+      },
+    ).toList();
+
     if (widget.booked != booked) {
       booked = widget.booked;
     }
@@ -689,17 +742,6 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
         }
       }
     }
-
-    timeList = timeSegments.map(
-      (e) {
-        if (timeListMap.containsKey(e)) {
-          return timeListMap[e]!;
-        } else {
-          return getTimeline(
-              availableColor, availableColor, timeSegments.indexOf(e));
-        }
-      },
-    ).toList();
 
     return SizedBox(
       width: double.infinity,

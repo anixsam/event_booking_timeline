@@ -72,6 +72,10 @@ class _HomePageState extends State<HomePage> {
                   showCurrentBlockedSlot: true,
                   currentBlockedColor: Colors.blue,
                   blockUntilCurrentTime: true,
+                  barColor: Colors.black,
+                  selectedBarColor: Colors.white,
+                  selectedTextColor: Colors.white,
+                  textColor: Colors.black,
                   onError: (error) {
                     log("Error: $error");
                   },
@@ -107,6 +111,10 @@ class _HomePageState extends State<HomePage> {
                   moveToNextPrevSlot: true,
                   durationToBlock: 1,
                   blockUntilCurrentTime: true,
+                  barColor: Colors.black,
+                  selectedBarColor: Colors.white,
+                  selectedTextColor: Colors.white,
+                  textColor: Colors.black,
                   onError: (error) {
                     log("Error: $error");
                   },

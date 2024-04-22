@@ -35,3 +35,8 @@
 
 * Added new feature - Added a flag to block the timeline until the time on device
 * Added new feature - Callback added to detect the end of timeline - when user scrolls to end callback will be triggered.
+
+## [0.1.4]
+
+* Added option to configure the color of bar when active and non acitve (Selected bar)
+* Added option to configure the color of time text when active and non acitve (Selected time)
