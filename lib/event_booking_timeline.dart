@@ -644,6 +644,8 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
 
   @override
   Widget build(BuildContext context) {
+    timeSegments = getTimes();
+
     List<Widget> timeList = [];
 
     Map<String, Widget> timeListMap = {};
@@ -676,7 +678,11 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
       int endIndex = timeSegments.indexOf(endTime);
 
       for (int i = startIndex + 1; i < endIndex; i++) {
-        timeListMap[timeSegments[i]] = getTimeline(bookedColor, bookedColor, i);
+        timeListMap[timeSegments[i]] = getTimeline(
+          bookedColor,
+          bookedColor,
+          i,
+        );
       }
 
       // Checking if start time is already end time of some other booking
@@ -684,11 +690,17 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
           booked.where((element) => element.endTime == startTime).toList();
 
       if (bookedTimes.isNotEmpty) {
-        timeListMap[startTime] =
-            getTimeline(bookedColor, bookedColor, startIndex);
+        timeListMap[startTime] = getTimeline(
+          bookedColor,
+          bookedColor,
+          startIndex,
+        );
       } else {
-        timeListMap[startTime] =
-            getTimeline(availableColor, bookedColor, startIndex);
+        timeListMap[startTime] = getTimeline(
+          availableColor,
+          bookedColor,
+          startIndex,
+        );
       }
 
       // Checking if end time is already start time of some other booking
@@ -696,10 +708,17 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
           booked.where((element) => element.startTime == endTime).toList();
 
       if (bookedTimes.isNotEmpty) {
-        timeListMap[endTime] = getTimeline(bookedColor, bookedColor, endIndex);
+        timeListMap[endTime] = getTimeline(
+          bookedColor,
+          bookedColor,
+          endIndex,
+        );
       } else {
-        timeListMap[endTime] =
-            getTimeline(bookedColor, availableColor, endIndex);
+        timeListMap[endTime] = getTimeline(
+          bookedColor,
+          availableColor,
+          endIndex,
+        );
       }
     }
 
@@ -712,8 +731,11 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
         int endIndex = timeSegments.indexOf(endTime);
 
         for (int i = startIndex + 1; i < endIndex; i++) {
-          timeListMap[timeSegments[i]] =
-              getTimeline(currentBlockedColor, currentBlockedColor, i);
+          timeListMap[timeSegments[i]] = getTimeline(
+            currentBlockedColor,
+            currentBlockedColor,
+            i,
+          );
         }
 
         // Checking if start time is already end time of some other booking
@@ -721,11 +743,17 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
             booked.where((element) => element.endTime == startTime).toList();
 
         if (bookedTimes.isNotEmpty) {
-          timeListMap[startTime] =
-              getTimeline(bookedColor, currentBlockedColor, startIndex);
+          timeListMap[startTime] = getTimeline(
+            bookedColor,
+            currentBlockedColor,
+            startIndex,
+          );
         } else {
-          timeListMap[startTime] =
-              getTimeline(availableColor, currentBlockedColor, startIndex);
+          timeListMap[startTime] = getTimeline(
+            availableColor,
+            currentBlockedColor,
+            startIndex,
+          );
         }
 
         // Checking if end time is already start time of some other booking
@@ -734,14 +762,34 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
             booked.where((element) => element.startTime == endTime).toList();
 
         if (bookedTimes.isNotEmpty) {
-          timeListMap[endTime] =
-              getTimeline(currentBlockedColor, bookedColor, endIndex);
+          timeListMap[endTime] = getTimeline(
+            currentBlockedColor,
+            bookedColor,
+            endIndex,
+          );
         } else {
-          timeListMap[endTime] =
-              getTimeline(currentBlockedColor, availableColor, endIndex);
+          timeListMap[endTime] = getTimeline(
+            currentBlockedColor,
+            availableColor,
+            endIndex,
+          );
         }
       }
     }
+
+    timeList = timeSegments.map(
+      (e) {
+        if (timeListMap.containsKey(e)) {
+          return timeListMap[e]!;
+        } else {
+          return getTimeline(
+            availableColor,
+            availableColor,
+            timeSegments.indexOf(e),
+          );
+        }
+      },
+    ).toList();
 
     return SizedBox(
       width: double.infinity,
