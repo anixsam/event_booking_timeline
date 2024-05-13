@@ -76,6 +76,7 @@ class _HomePageState extends State<HomePage> {
                   selectedBarColor: Colors.white,
                   selectedTextColor: Colors.white,
                   textColor: Colors.black,
+                  addBuffer: false,
                   onError: (error) {
                     log("Error: $error");
                   },
@@ -115,6 +116,7 @@ class _HomePageState extends State<HomePage> {
                   selectedBarColor: Colors.white,
                   selectedTextColor: Colors.white,
                   textColor: Colors.black,
+                  addBuffer: true,
                   onError: (error) {
                     log("Error: $error");
                   },

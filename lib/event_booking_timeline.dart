@@ -1,6 +1,6 @@
 library event_booking_timeline;
 
-// import 'dart:math';
+import 'package:event_booking_timeline/error_codes.dart';
 
 /// import necessary packages from files;
 import 'package:event_booking_timeline/exceptions/exception.dart';
@@ -44,6 +44,7 @@ class EventBookingTimeline extends StatefulWidget {
     required this.selectedTextColor,
     required this.textColor,
     required this.barColor,
+    required this.addBuffer,
   });
 
   /// Constructor with current booking slot highlight feature
@@ -71,6 +72,7 @@ class EventBookingTimeline extends StatefulWidget {
     required this.selectedTextColor,
     required this.textColor,
     required this.barColor,
+    required this.addBuffer,
   });
 
   /// Callback function to get the selected time
@@ -139,6 +141,9 @@ class EventBookingTimeline extends StatefulWidget {
   /// Color of the bar
   final Color barColor;
 
+  /// Buffer to add to the timeline (Buffer before and after the events booked, bufferTime depends on the number of subdivisions)
+  final bool addBuffer;
+
   @override
   State<EventBookingTimeline> createState() => _EventBookingTimelineState();
 }
@@ -183,6 +188,62 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
   void initState() {
     super.initState();
 
+    // Adding buffer to each booked slots
+    if (widget.addBuffer) {
+      List<Booking> bufferBooked = [];
+
+      for (var element in widget.booked) {
+        String startTime = element.startTime;
+        String endTime = element.endTime;
+
+        int bufferMinute = 60 ~/ (widget.numberOfSubdivision + 1);
+
+        if (startTime != "00:00") {
+          int hour = int.parse(startTime.split(":")[0]);
+          int minute = int.parse(startTime.split(":")[1]);
+
+          int newMinute = minute - bufferMinute;
+
+          if (newMinute < 0) {
+            newMinute = 60 + newMinute;
+            if (hour - 1 >= 0) {
+              hour = hour - 1;
+            }
+          } else {
+            newMinute = minute - bufferMinute;
+          }
+
+          startTime =
+              "${hour.toString().padLeft(2, '0')}:${newMinute.toString().padLeft(2, '0')}";
+        }
+
+        if (endTime != "24:00") {
+          int hour = int.parse(endTime.split(":")[0]);
+          int minute = int.parse(endTime.split(":")[1]);
+
+          int newMinute = minute + bufferMinute;
+
+          if (newMinute >= 60) {
+            newMinute = newMinute - 60;
+            if (hour + 1 <= 24) {
+              hour = hour + 1;
+            }
+          } else {
+            newMinute = minute + bufferMinute;
+          }
+
+          endTime =
+              "${hour.toString().padLeft(2, '0')}:${newMinute.toString().padLeft(2, '0')}";
+        }
+
+        bufferBooked.add(Booking(startTime: startTime, endTime: endTime));
+      }
+
+      setState(() {
+        booked = bufferBooked;
+      });
+    }
+
     // Initializing the timeline
     setState(() {
       width = widget.widthOfSegment;
@@ -200,8 +261,6 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
       selectedTextColor = widget.selectedTextColor;
       textColor = widget.textColor;
       barColor = widget.barColor;
-
-      booked = widget.booked;
     });
 
     if (widget.blockUntilCurrentTime) {
@@ -633,6 +692,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     widget.onError(
       DurationException(
         "Next ${widget.durationToBlock} hours are not available",
+        ErrorCodes.nextDurationBooked,
       ),
     );
   }
