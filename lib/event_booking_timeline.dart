@@ -189,60 +189,9 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     super.initState();
 
     // Adding buffer to each booked slots
-    if (widget.addBuffer) {
-      List<Booking> bufferBooked = [];
-
-      for (var element in widget.booked) {
-        String startTime = element.startTime;
-        String endTime = element.endTime;
-
-        int bufferMinute = 60 ~/ (widget.numberOfSubdivision + 1);
-
-        if (startTime != "00:00") {
-          int hour = int.parse(startTime.split(":")[0]);
-          int minute = int.parse(startTime.split(":")[1]);
-
-          int newMinute = minute - bufferMinute;
-
-          if (newMinute < 0) {
-            newMinute = 60 + newMinute;
-            if (hour - 1 >= 0) {
-              hour = hour - 1;
-            }
-          } else {
-            newMinute = minute - bufferMinute;
-          }
-
-          startTime =
-              "${hour.toString().padLeft(2, '0')}:${newMinute.toString().padLeft(2, '0')}";
-        }
-
-        if (endTime != "24:00") {
-          int hour = int.parse(endTime.split(":")[0]);
-          int minute = int.parse(endTime.split(":")[1]);
-
-          int newMinute = minute + bufferMinute;
-
-          if (newMinute >= 60) {
-            newMinute = newMinute - 60;
-            if (hour + 1 <= 24) {
-              hour = hour + 1;
-            }
-          } else {
-            newMinute = minute + bufferMinute;
-          }
-
-          endTime =
-              "${hour.toString().padLeft(2, '0')}:${newMinute.toString().padLeft(2, '0')}";
-        }
-
-        bufferBooked.add(Booking(startTime: startTime, endTime: endTime));
-      }
-
-      setState(() {
-        booked = bufferBooked;
-      });
-    }
+    setState(() {
+      booked = addBuffer(widget.booked);
+    });
 
     // Initializing the timeline
     setState(() {
@@ -702,6 +651,72 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     widget.onTimeLineEnd();
   }
 
+  /// Adding Buffer to the booking list
+  List<Booking> addBuffer(List<Booking> booking) {
+    if (widget.addBuffer == false) {
+      return booking;
+    }
+
+    List<Booking> bufferBooked = [];
+
+    for (var element in widget.booked) {
+      String startTime = element.startTime;
+      String endTime = element.endTime;
+      int bufferMinute = 60 ~/ (widget.numberOfSubdivision + 1);
+
+      String newStartTime = startTime;
+      String newEndTime = endTime;
+
+      if (startTime != "00:00" && startTime != widget.startTime) {
+        int hour = int.parse(startTime.split(":")[0]);
+        int minute = int.parse(startTime.split(":")[1]);
+
+        int newMinute = minute - bufferMinute;
+
+        if (newMinute < 0) {
+          newMinute = 60 + newMinute;
+          if (hour - 1 >= 0) {
+            hour = hour - 1;
+          }
+        } else {
+          newMinute = minute - bufferMinute;
+        }
+
+        print(
+            "New StartTime ${hour.toString().padLeft(2, '0')}:${newMinute.toString().padLeft(2, '0')}");
+
+        newStartTime =
+            "${hour.toString().padLeft(2, '0')}:${newMinute.toString().padLeft(2, '0')}";
+      }
+
+      if (endTime != "24:00" && endTime != widget.endTime) {
+        int hour = int.parse(endTime.split(":")[0]);
+        int minute = int.parse(endTime.split(":")[1]);
+
+        int newMinute = minute + bufferMinute;
+
+        if (newMinute >= 60) {
+          newMinute = newMinute - 60;
+          if (hour + 1 <= 24) {
+            hour = hour + 1;
+          }
+        } else {
+          newMinute = minute + bufferMinute;
+        }
+
+        print(
+            "New End Time ${hour.toString().padLeft(2, '0')}:${newMinute.toString().padLeft(2, '0')}");
+
+        newEndTime =
+            "${hour.toString().padLeft(2, '0')}:${newMinute.toString().padLeft(2, '0')}";
+      }
+
+      bufferBooked.add(Booking(startTime: newStartTime, endTime: newEndTime));
+    }
+
+    return bufferBooked;
+  }
+
   @override
   Widget build(BuildContext context) {
     timeSegments = getTimes();
@@ -727,7 +742,7 @@ class _EventBookingTimelineState extends State<EventBookingTimeline> {
     ).toList();
 
     if (widget.booked != booked) {
-      booked = widget.booked;
+      booked = addBuffer(widget.booked);
     }
 
     for (var element in booked) {
