@@ -40,3 +40,10 @@
 
 * Added option to configure the color of bar when active and non acitve (Selected bar)
 * Added option to configure the color of time text when active and non acitve (Selected time)
+
+## [0.1.5]
+* Bug fix - Booked timeline color not displayed
+
+## [0.1.6]
+* Added feature - To set buffer time before each booked events (Buffer time may depend on the number of divisions).
+* Bug fix - The error callback does not contain the error codes.(Added code for the next duration of event is booked).
