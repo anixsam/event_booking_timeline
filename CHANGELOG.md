@@ -47,3 +47,6 @@
 ## [0.1.6]
 * Added feature - To set buffer time before each booked events (Buffer time may depend on the number of divisions).
 * Bug fix - The error callback does not contain the error codes.(Added code for the next duration of event is booked).
+
+## [0.1.7]
+* Bug fix - Buffer setting issue
