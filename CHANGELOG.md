@@ -50,3 +50,6 @@
 
 ## [0.1.7]
 * Bug fix - Buffer setting issue
+
+## [0.2.0]
+* Optimizations - Updated the methods & internal logics
