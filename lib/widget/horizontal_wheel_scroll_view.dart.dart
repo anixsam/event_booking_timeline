@@ -22,7 +22,7 @@ class HorizontalListWheelScrollView extends StatelessWidget {
 
   /// Creates a [ListWheelScrollView] that scrolls items horizontally.
   const HorizontalListWheelScrollView({
-    Key? key,
+    super.key,
     this.scrollDirection = Axis.vertical,
     this.controller,
     this.physics,
@@ -38,12 +38,11 @@ class HorizontalListWheelScrollView extends StatelessWidget {
     this.renderChildrenOutsideViewport = false,
     this.clipBehavior = Clip.hardEdge,
     required this.children,
-  })  : childDelegate = null,
-        super(key: key);
+  })  : childDelegate = null;
 
   /// Creates a [ListWheelScrollView] that scrolls items horizontally.
   const HorizontalListWheelScrollView.useDelegate({
-    Key? key,
+    super.key,
     this.scrollDirection = Axis.vertical,
     this.controller,
     this.physics,
@@ -59,8 +58,7 @@ class HorizontalListWheelScrollView extends StatelessWidget {
     this.renderChildrenOutsideViewport = false,
     this.clipBehavior = Clip.hardEdge,
     required this.childDelegate,
-  })  : children = null,
-        super(key: key);
+  })  : children = null;
 
   @override
   Widget build(BuildContext context) {

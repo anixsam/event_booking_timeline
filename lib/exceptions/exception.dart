@@ -7,10 +7,7 @@ class EventException implements Exception {
   final ErrorCodes code;
 
   /// Constructor for exception
-  EventException(
-    this.message,
-    this.code,
-  );
+  EventException(this.message, this.code);
 }
 
 class DurationException implements Exception {
@@ -19,8 +16,5 @@ class DurationException implements Exception {
   final ErrorCodes code;
 
   /// Constructor for exception
-  DurationException(
-    this.message,
-    this.code,
-  );
+  DurationException(this.message, this.code);
 }

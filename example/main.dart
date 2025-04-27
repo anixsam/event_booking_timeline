@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:event_booking_timeline/controller/timeline_controller.dart';
+import 'package:event_booking_timeline/model/booking.dart';
 import 'package:flutter/material.dart';
 import 'package:event_booking_timeline/event_booking_timeline.dart';
 
@@ -50,86 +52,61 @@ class _HomePageState extends State<HomePage> {
                 Icons.arrow_drop_down,
                 size: 30,
               ),
-              // Timeline with current booking slot
-              Expanded(
-                child: EventBookingTimeline.withCurrentBookingSlot(
-                  booked: [
-                    Booking(startTime: "00:00", endTime: "01:00"),
-                    Booking(startTime: "01:00", endTime: "02:00"),
-                    Booking(startTime: "08:00", endTime: "09:00"),
-                  ],
-                  startTime: "00:00",
-                  endTime: "24:00",
-                  is12HourFormat: true,
-                  moveToFirstAvailableTime: false,
-                  numberOfSubdivision: 5,
-                  widthOfSegment: 100,
-                  widthOfTimeDivisionBar: 3,
-                  availableColor: Colors.green,
-                  bookedColor: Colors.red,
-                  moveToNextPrevSlot: true,
-                  durationToBlock: 1,
-                  showCurrentBlockedSlot: true,
-                  currentBlockedColor: Colors.blue,
-                  blockUntilCurrentTime: true,
-                  barColor: Colors.black,
-                  selectedBarColor: Colors.white,
-                  selectedTextColor: Colors.white,
-                  textColor: Colors.black,
-                  addBuffer: false,
-                  onError: (error) {
-                    log("Error: $error");
-                  },
-                  onTimeSelected: (String time) {
-                    setState(
-                      () {
-                        text = time;
-                      },
-                    );
-                  },
-                  onTimeLineEnd: () {
-                    log("TimeLine Ended");
-                  },
-                ),
-              ),
               // Normal Timeline with no current booking slot
               Expanded(
                 child: EventBookingTimeline(
-                  booked: [
-                    Booking(startTime: "00:00", endTime: "01:00"),
-                    Booking(startTime: "01:00", endTime: "02:00"),
-                    Booking(startTime: "08:00", endTime: "09:00"),
-                  ],
-                  startTime: "00:00",
-                  endTime: "24:00",
-                  is12HourFormat: true,
-                  moveToFirstAvailableTime: false,
-                  numberOfSubdivision: 5,
-                  widthOfSegment: 100,
-                  widthOfTimeDivisionBar: 3,
-                  availableColor: Colors.green,
-                  bookedColor: Colors.red,
-                  moveToNextPrevSlot: true,
-                  durationToBlock: 1,
-                  blockUntilCurrentTime: true,
-                  barColor: Colors.black,
-                  selectedBarColor: Colors.white,
-                  selectedTextColor: Colors.white,
-                  textColor: Colors.black,
+                  onTimeSelected: (time) {},
+                  startTime: DateTime(2023, 10, 1, 00, 0),
+                  endTime: DateTime(2023, 10, 2, 00, 00),
+                  timeDivision: 5,
                   addBuffer: true,
+                  autoMoveToFirstAvailableTime: true,
+                  availableSlotColor: Colors.green,
+                  bookedSlotColor: Colors.red,
+                  barColor: Colors.grey,
+                  bufferDuration: const Duration(hours: 1),
+                  currentBlockedSlotColor: Colors.blue,
+                  currentBookings: [
+                    Booking(
+                      startTime: DateTime(2023, 10, 1, 10, 0),
+                      endTime: DateTime(2023, 10, 1, 11, 5),
+                    ),
+                    Booking(
+                      startTime: DateTime(2023, 10, 1, 2, 0),
+                      endTime: DateTime(2023, 10, 1, 3, 0),
+                    ),
+                    Booking(
+                      startTime: DateTime(2023, 10, 1, 4, 0),
+                      endTime: DateTime(2023, 10, 1, 5, 0),
+                    ),
+                    Booking(
+                      startTime: DateTime(2023, 10, 1, 6, 0),
+                      endTime: DateTime(2023, 10, 1, 7, 0),
+                    ),
+                  ],
+                  durationToBlock: const Duration(hours: 1),
+                  is12HourFormat: true,
+                  moveToNextPrevSlot: true,
+                  selectedBarColor: Colors.yellow,
                   onError: (error) {
-                    log("Error: $error");
-                  },
-                  onTimeSelected: (String time) {
-                    setState(
-                      () {
-                        text = time;
-                      },
-                    );
+                    log(error.toString());
                   },
                   onTimeLineEnd: () {
-                    log("TimeLine Ended");
+                    print("Time Line Ended");
                   },
+                  showCurrentBlockedSlot: true,
+                  timelineController: TimelineController(),
+                  widthOfSegment: 100,
+                  widthOfTimeDivisionBar: 20,
+                  textStyle: const TextStyle(color: Colors.black, fontSize: 16),
+                  selectedTextStyle: const TextStyle(
+                    color: Colors.amber,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  barLength: 15,
+                  barThickness: 4,
+                  timelineThickness: 10,
                 ),
               ),
             ],
